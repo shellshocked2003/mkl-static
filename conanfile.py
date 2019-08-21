@@ -7,7 +7,7 @@ class mklDynamic(ConanFile):
     homepage = "https://anaconda.org/anaconda/mkl"
     author = "Michael Gardner <mhgardner@berkeley.edu>"
     license = "Intel Simplified Software License"   
-    settings = "os", "compiler", "build_type", "arch"
+    settings = {"os": None, "compiler": None, "build_type": None, "arch": ["x86_64"]}
     description = "Intel Math Kernel Library Static Binaries"
     exports_sources = ["CMakeLists.txt"]
     generators = "cmake"
