@@ -9,6 +9,7 @@ class mklDynamic(ConanFile):
     license = "Intel Simplified Software License"   
     settings = {"os": None, "arch": ["x86_64"]}
     options = {"threaded" : [True, False]}
+    default_options = {"threaded": False}
     description = "Intel Math Kernel Library Static Binaries"
     exports_sources = ["CMakeLists.txt"]
     generators = "cmake"
