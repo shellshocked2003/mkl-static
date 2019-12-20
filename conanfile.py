@@ -8,6 +8,7 @@ class mklDynamic(ConanFile):
     author = "Michael Gardner <mhgardner@berkeley.edu>"
     license = "Intel Simplified Software License"   
     settings = {"os": None, "arch": ["x86_64"]}
+    options = {"threaded" : [True, False]}
     description = "Intel Math Kernel Library Static Binaries"
     exports_sources = ["CMakeLists.txt"]
     generators = "cmake"
@@ -41,4 +42,7 @@ class mklDynamic(ConanFile):
             self.copy("*", dst="lib", src=self._source_subfolder + "/lib")
 
     def package_info(self):
-        self.cpp_info.libs = tools.collect_libs(self)
+        if "threaded" in self.options is True:
+            self.cpp_info.libs = tools.collect_libs(self)
+        else :
+            self.cpp_info.libs = ["mkl_intel_lp64", "mkl_sequential", "mkl_core"]
