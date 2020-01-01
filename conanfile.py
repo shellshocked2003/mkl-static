@@ -7,7 +7,7 @@ class mklDynamic(ConanFile):
     homepage = "https://anaconda.org/anaconda/mkl"
     author = "Michael Gardner <mhgardner@berkeley.edu>"
     license = "Intel Simplified Software License"   
-    settings = {"os": None, "arch": ["x86_64"]}
+    settings = {"os": None, "compiler": None, "arch": ["x86_64"]}
     options = {"threaded" : [True, False]}
     default_options = {"threaded": False}
     description = "Intel Math Kernel Library Static Binaries"
@@ -46,4 +46,15 @@ class mklDynamic(ConanFile):
         if "threaded" in self.options is True:
             self.cpp_info.libs = tools.collect_libs(self)
         else :
-            self.cpp_info.libs = ["mkl_intel_lp64", "mkl_sequential", "mkl_core"]
+            if self.settings.os == "Linux":
+                # linker flags
+                if self.settings.compiler == "gcc":
+                    self.cpp_info.exelinkflags = ["-static-libgcc", "-static-libstdc++", "-lpthread", "-lm", "-ldl"]
+                else:
+                    self.cpp_info.exelinkflags = ["-static-libstdc++", "-lpthread", "-lm", "-ldl"]            
+                self.cpp_info.libs = ["-Wl,--start-group"]
+                self.cpp_info.libs.extend(["mkl_intel_lp64", "mkl_sequential", "mkl_core"]) 
+                self.cpp_info.libs.extend(["-Wl,--end-group"])
+
+            else:
+                self.cpp_info.libs = ["mkl_intel_lp64", "mkl_sequential", "mkl_core"]
