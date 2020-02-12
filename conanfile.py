@@ -1,6 +1,6 @@
 from conans import ConanFile, CMake, tools
 
-class mklDynamic(ConanFile):
+class mklStatic(ConanFile):
     name = "mkl-static"
     version = "2019.4"
     url = "https://github.com/shellshocked2003/mkl-static"
@@ -47,14 +47,20 @@ class mklDynamic(ConanFile):
             self.cpp_info.libs = tools.collect_libs(self)
         else :
             if self.settings.os == "Linux":
-                # linker flags
-                if self.settings.compiler == "gcc":
-                    self.cpp_info.exelinkflags = ["-static-libgcc", "-static-libstdc++", "-lpthread", "-lm", "-ldl"]
-                else:
-                    self.cpp_info.exelinkflags = ["-static-libstdc++", "-lpthread", "-lm", "-ldl"]            
-                self.cpp_info.libs = ["-Wl,--start-group"]
-                self.cpp_info.libs.extend(["mkl_intel_lp64", "mkl_sequential", "mkl_core"]) 
-                self.cpp_info.libs.extend(["-Wl,--end-group"])
+                # defines
+                self.cpp_info.defines = ["MKL_ILP64"]
+               
+                # compiler flags
+                self.cpp_info.cxx_flags = ["-m64"]
 
+                # linker flags
+                self.cpp_info.exelinkflags = ["-Wl,--start-group {0}/lib/libmkl_intel_lp64.a {0}/lib/libmkl_sequential.a\
+                                             {0}/lib/libmkl_core.a -Wl,--end-group".format(self.cpp_info.rootpath)]
+
+                if self.settings.compiler == "gcc":
+                    self.cpp_info.exelinkflags.extend(["-static-libgcc", "-static-libstdc++", "-lpthread", "-lm", "-ldl"])
+                else:
+                    self.cpp_info.exelinkflags.extend(["-static-libstdc++", "-lpthread", "-lm", "-ldl"])
+                
             else:
                 self.cpp_info.libs = ["mkl_intel_lp64", "mkl_sequential", "mkl_core"]
